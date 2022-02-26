@@ -1,0 +1,37 @@
+{
+  "name": "grapheene-slack-plugin",
+  "version": "1.0.0",
+  "description": "Add Grapheene to Slack with this plugin",
+  "main": "index.js",
+  "scripts": {
+    "start": "nodemon -L -e js,json --ignore node_modules/ --ignore user/  --exec \"node ./index.js\"",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Grapheene/slack-plugin.git"
+  },
+  "keywords": [
+    "slack",
+    "grapheene",
+    "encrypt",
+    "encryption"
+  ],
+  "author": "Grapheene Inc",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/Grapheene/slack-plugin/issues"
+  },
+  "homepage": "https://github.com/Grapheene/slack-plugin#readme",
+  "dependencies": {
+    "@grapheene/grapheene": "^0.0.10",
+    "@slack/bolt": "^3.10.0",
+    "dotenv": "^16.0.0",
+    "fs-extra": "^10.0.1",
+    "md5": "^2.3.0"
+  },
+  "devDependencies": {
+    "eslint": "^8.10.0",
+    "nodemon": "^2.0.15"
+  }
+}

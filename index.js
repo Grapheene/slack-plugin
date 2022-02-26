@@ -77,7 +77,13 @@ const app = new App({
                                     const data = await member.data().encrypt(text, 'encrypted');
                                     console.log('Ring Created')
                                     console.log(data)
-                                    await say(encodeURIComponent(data.encrypted));
+                                    const toPost = {
+                                        channel: body.channel_id,
+                                        user_name: body.user_name,
+                                        user_id: body.user_id,
+                                        text: encodeURIComponent(data.encrypted)
+                                    }
+                                    await say(toPost);
                                 }).catch((e) => {
                                 console.log(e.message);
                             });

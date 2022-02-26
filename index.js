@@ -65,7 +65,7 @@ const app = new App({
                 const Grapheene = require('@grapheene/grapheene')(config.client_id, config.api_key, config.service_token);
                 if (body.text.match(/^encrypt/)) {
                     console.log(body)
-                    const text = body.text.replace(/^encrypt /, "");
+                    const text = body.text.replace(/^encrypt/, "");
 
                     Grapheene.setup()
                         .then(() => {
@@ -100,6 +100,29 @@ const app = new App({
     app.shortcut('decrypt_message', async ({ack, payload, client}) => {
         // Acknowledge shortcut request
         ack();
+        const res = await client.views.open({
+            trigger_id: payload.trigger_id,
+            view: {
+                "type": "modal",
+                "title": {
+                    "type": "plain_text",
+                    "text": "Grapheene"
+                },
+                "close": {
+                    "type": "plain_text",
+                    "text": "Cancel"
+                },
+                "blocks": [
+                    {
+                        "type": "section",
+                        "text": {
+                            "type": "plain_text",
+                            "text": ":man-biking: Decryption in progress..."
+                        }
+                    }
+                ]
+            }
+        });
         const teamDir = rootDir + '/user/' + payload.team.id
         // const ringName = [body.api_app_id, body.team_id, body.channel_id]
         const ringName = [payload.message.bot_profile.app_id, payload.team.id, payload.channel.id]
@@ -122,8 +145,9 @@ const app = new App({
                                 data.encrypted = decodeURIComponent(payload.message.text)
                                 console.log(data)
                                 const decrypted = await member.data().decrypt(data)
-                                await client.views.open({
-                                    trigger_id: payload.trigger_id,
+                                const viewId = res.view.id;
+                                await client.views.update({
+                                    view_id: viewId,
                                     view: {
                                         "type": "modal",
                                         "title": {

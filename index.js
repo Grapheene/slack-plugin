@@ -131,7 +131,6 @@ const app = new App({
             }
         });
         const teamDir = rootDir + '/user/' + payload.team.id
-        //const ringName = [body.api_app_id, body.team_id, body.channel_id]
         const ringName = [payload.team.id, payload.channel.id]
         try {
             if (fs.existsSync(teamDir + '/config.json')) {

@@ -1,28 +1,20 @@
 require('dotenv').config()
 const {App} = require('@slack/bolt');
-
 const fs = require("fs-extra")
 const path = require("path");
-const md5 = require("md5");
-
 const rootDir = path.dirname(__filename);
-console.log(rootDir)
 
 const app = new App({
     token: process.env.SLACK_USER_TOKEN,
     appToken: process.env.SLACK_APP_TOKEN,
     socketMode: true,
 });
+
 (async () => {
 
     // Start your app
     await app.start(process.env.PORT || 3000);
 
-
-    app.event('message', (message) => {
-        //console.log(message);
-    });
-    // /grapheene config {"client_id":"CLFD7DDDAEE1664B58A22D2F60CF1B6339", "api_key": "CK16ABD005298546508B032066F1836A8F", "service_token":"00ggz2yoqTmUQgnm2696"}
     app.command('/grapheene', async (stuff) => {
         const {ack, body, client, respond, say} = stuff;
         ack();
@@ -45,8 +37,7 @@ const app = new App({
                         Grapheene.setup()
                             .then(() => {
                                 Grapheene.kmf.ring.create(ringName.join(":"))
-                                    .then(async (ring) => {
-                                        console.log('Ring Created')
+                                    .then(async () => {
                                         await respond('Setup Complete!');
                                     }).catch((e) => {
                                     console.log(e.message);
@@ -64,7 +55,6 @@ const app = new App({
                 const config = fs.readJsonSync(teamDir + '/config.json')
                 const Grapheene = require('@grapheene/grapheene')(config.client_id, config.api_key, config.service_token);
                 if (body.text.match(/^encrypt/)) {
-                    console.log(body)
                     const text = body.text.replace(/^encrypt/, "");
 
                     Grapheene.setup()
@@ -75,18 +65,33 @@ const app = new App({
                                         name: body.channel_id
                                     })
                                     const data = await member.data().encrypt(text, 'encrypted');
-                                    console.log('Ring Created')
-                                    console.log(data)
                                     const toPost = {
-                                        channel: body.channel_id,
-                                        user_name: body.user_name,
-                                        user_id: body.user_id,
+
+                                        username: result.user.real_name,
+                                        icon_url: result.user.profile.image_512,
                                         text: encodeURIComponent(data.encrypted)
                                     }
-                                    await say(toPost);
-                                }).catch((e) => {
-                                console.log(e.message);
-                            });
+                                    if (body.channel_name === 'directmessage') {
+
+                                        say(toPost).catch(async (e) => {
+                                            if (e.data.error === "channel_not_found") {
+                                                await respond("To DM an encrypted message, create a DM with Grapheene and your target user first.")
+                                            }else{
+                                                await respond("An unknown error has happened. We have reported the error for you!")
+                                            }
+                                        });
+
+                                    } else {
+                                        toPost.channel = body.channel_id;
+                                        client.chat.postMessage(toPost).catch(async (e) => {
+                                            if (e.data.error === "channel_not_found") {
+                                                await respond("Grapheene could not find this channel, ensure that the Grapheene App has been invited to the channel.")
+                                            }else{
+                                                await respond("An unknown error has happened. We have reported the error for you!")
+                                            }
+                                        });
+                                    }
+                                });
                         })
 
 
@@ -94,13 +99,9 @@ const app = new App({
             } else {
                 await respond('An admin must setup Grapheene first with /grapheen config {"client_id":"Your Client ID", "api_key": "Your API Key", "service_token":"Your Service Token"}');
             }
-
-
         } catch (error) {
-            console.error(error);
+            console.error(error.data.error);
         }
-
-
     });
 
     app.shortcut('decrypt_message', async ({ack, payload, client}) => {
@@ -130,11 +131,8 @@ const app = new App({
             }
         });
         const teamDir = rootDir + '/user/' + payload.team.id
-        // const ringName = [body.api_app_id, body.team_id, body.channel_id]
         const ringName = [payload.message.bot_profile.app_id, payload.team.id, payload.channel.id]
-        console.log(payload)
         try {
-            // Call the views.open method using the WebClient passed to listeners
             if (fs.existsSync(teamDir + '/config.json')) {
                 const config = fs.readJsonSync(teamDir + '/config.json')
                 const Grapheene = require('@grapheene/grapheene')(config.client_id, config.api_key, config.service_token);
@@ -149,7 +147,6 @@ const app = new App({
                                 const data = await ring.getData('encrypted');
 
                                 data.encrypted = decodeURIComponent(payload.message.text)
-                                console.log(data)
                                 const decrypted = await member.data().decrypt(data)
                                 const viewId = res.view.id;
                                 await client.views.update({
@@ -187,52 +184,6 @@ const app = new App({
             }
 
 
-
-        } catch (error) {
-            console.error(error);
-        }
-    });
-
-    app.shortcut('open_modal', async ({ack, payload, client}) => {
-        // Acknowledge shortcut request
-        ack();
-
-        try {
-            // Call the views.open method using the WebClient passed to listeners
-            const result = await client.views.open({
-                trigger_id: payload.trigger_id,
-                view: {
-                    "type": "modal",
-                    "title": {
-                        "type": "plain_text",
-                        "text": "My App2"
-                    },
-                    "close": {
-                        "type": "plain_text",
-                        "text": "Close"
-                    },
-                    "blocks": [
-                        {
-                            "type": "section",
-                            "text": {
-                                "type": "mrkdwn",
-                                "text": "About the simplest modal you could conceive of :smile:\n\nMaybe <https://api.slack.com/reference/block-kit/interactive-components|*make the modal interactive*> or <https://api.slack.com/surfaces/modals/using#modifying|*learn more advanced modal use cases*>."
-                            }
-                        },
-                        {
-                            "type": "context",
-                            "elements": [
-                                {
-                                    "type": "mrkdwn",
-                                    "text": "Psssst this modal was designed using <https://api.slack.com/tools/block-kit-builder|*Block Kit Builder*>"
-                                }
-                            ]
-                        }
-                    ]
-                }
-            });
-
-            console.log(result);
         } catch (error) {
             console.error(error);
         }

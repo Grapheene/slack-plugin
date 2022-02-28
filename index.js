@@ -5,7 +5,7 @@ const path = require("path");
 const rootDir = path.dirname(__filename);
 
 const app = new App({
-    token: process.env.SLACK_USER_TOKEN,
+    token: process.env.SLACK_BOT_TOKEN,
     appToken: process.env.SLACK_APP_TOKEN,
     socketMode: true,
 });

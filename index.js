@@ -25,7 +25,7 @@ const app = new App({
                 user: body.user_id
             });
 
-            const ringName = [body.api_app_id, body.team_id, body.channel_id]
+            const ringName = [body.team_id, body.channel_id]
 
             if (body.text.match(/^configure|^config/)) {
                 if (result.user.is_admin) {
@@ -131,7 +131,8 @@ const app = new App({
             }
         });
         const teamDir = rootDir + '/user/' + payload.team.id
-        const ringName = [payload.message.bot_profile.app_id, payload.team.id, payload.channel.id]
+        //const ringName = [body.api_app_id, body.team_id, body.channel_id]
+        const ringName = [payload.team.id, payload.channel.id]
         try {
             if (fs.existsSync(teamDir + '/config.json')) {
                 const config = fs.readJsonSync(teamDir + '/config.json')

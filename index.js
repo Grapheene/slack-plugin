@@ -56,7 +56,7 @@ const app = new App({
                 const Grapheene = require('@grapheene/grapheene')(config.client_id, config.api_key, config.service_token);
                 if (body.text.match(/^encrypt/)) {
                     const text = body.text.replace(/^encrypt/, "");
-
+                    await respond('Encryption in progress...');
                     Grapheene.setup()
                         .then(() => {
                             Grapheene.kmf.ring.create(ringName.join(":"))

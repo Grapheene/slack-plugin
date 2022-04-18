@@ -1,0 +1,75 @@
+display_information:
+  name: Grapheene
+  description: Encrypt and decrypt messages and more
+  background_color: "#737373"
+  long_description: Enables your organization to use Grapheene state of the art encryption to send and receive encrypted messages and files. Sign up for an account at https://grapheene.com/ and configure your integration to get started!
+features:
+  bot_user:
+    display_name: Grapheene
+    always_online: false
+  shortcuts:
+    - name: Decrypt
+      type: message
+      callback_id: decrypt_message
+      description: Decrypts the message
+  slash_commands:
+    - command: /grapheene
+      description: Encrypt and decrypt messages and more
+      usage_hint: encrypt
+      should_escape: false
+  workflow_steps:
+    - name: Configure Grapheene
+      callback_id: configure_grapheene
+oauth_config:
+  redirect_urls:
+    - https://grapheene-dashboard.ngrok.io/plugins/slack
+  scopes:
+    user:
+      - channels:history
+      - chat:write
+      - groups:history
+      - im:history
+      - im:read
+      - im:write
+      - mpim:history
+      - mpim:read
+      - mpim:write
+      - users:read
+    bot:
+      - channels:history
+      - channels:read
+      - chat:write
+      - chat:write.customize
+      - chat:write.public
+      - commands
+      - conversations.connect:read
+      - conversations.connect:write
+      - groups:history
+      - groups:read
+      - im:history
+      - im:read
+      - im:write
+      - mpim:history
+      - mpim:read
+      - mpim:write
+      - users:read
+      - users:write
+      - workflow.steps:execute
+settings:
+  event_subscriptions:
+    user_events:
+      - message.channels
+      - message.groups
+      - message.im
+      - message.mpim
+    bot_events:
+      - message.channels
+      - message.groups
+      - message.im
+      - message.mpim
+      - workflow_step_execute
+  interactivity:
+    is_enabled: true
+  org_deploy_enabled: false
+  socket_mode_enabled: true
+  token_rotation_enabled: false

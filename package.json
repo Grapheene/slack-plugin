@@ -24,11 +24,12 @@
   },
   "homepage": "https://github.com/Grapheene/slack-plugin#readme",
   "dependencies": {
-    "@grapheene/grapheene": "^0.0.12",
+    "@grapheene/grapheene": "^0.1.13",
     "@slack/bolt": "^3.10.0",
     "dotenv": "^16.0.0",
     "fs-extra": "^10.0.1",
-    "md5": "^2.3.0"
+    "md5": "^2.3.0",
+    "prisma": "^3.10.0"
   },
   "devDependencies": {
     "eslint": "^8.10.0",

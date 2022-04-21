@@ -24,7 +24,7 @@
   },
   "homepage": "https://github.com/Grapheene/slack-plugin#readme",
   "dependencies": {
-    "@grapheene/grapheene": "^0.1.13",
+    "@grapheene/grapheene": "^0.1.14",
     "@slack/bolt": "^3.10.0",
     "dotenv": "^16.0.0",
     "fs-extra": "^10.0.1",
